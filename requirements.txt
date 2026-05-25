@@ -1,39 +1,21 @@
-# ===============================
 # Core scientific computing
-# ===============================
 numpy>=1.23
 pandas>=1.5
 scipy>=1.9
 
-# ===============================
 # Visualization
-# ===============================
 matplotlib>=3.6
 seaborn>=0.12
 
-# ===============================
-# Machine Learning
-# ===============================
+# Machine learning
 scikit-learn>=1.2
 
-# ===============================
 # Excel file support
-# ===============================
 openpyxl>=3.0
 
-# ===============================
 # Model interpretability
-# ===============================
 shap>=0.41
 
-# ===============================
-# Deep Learning
-# ===============================
-tensorflow>=2.10
-keras>=2.10
-
-# ===============================
-# Jupyter environment
-# ===============================
+# Notebook environment
 jupyter
 notebook

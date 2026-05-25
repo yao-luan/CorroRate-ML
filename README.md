@@ -1,200 +1,208 @@
-# ustb-materials-data-mining
+# CorroRate-ML
 
-📊 **USTB · Materials Data Mining**  
-北京科技大学《材料数据挖掘利用方法》课程  
-**个人学习、实验与课程设计完整存档仓库**
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](pyproject.toml)
+[![ML](https://img.shields.io/badge/ML-scikit--learn-orange.svg)](requirements.txt)
+[![Reproducible](https://img.shields.io/badge/Experiment-Reproducible-brightgreen.svg)](scripts/run_experiment.py)
+[![Notebook](https://img.shields.io/badge/Workflow-Jupyter-lightgrey.svg)](course_project/project.ipynb)
 
-🔗 **访问地址**：https://github.com/yao-luan/ustb-materials-data-mining 
+**A Reproducible Materials Informatics Baseline for Corrosion Rate Prediction**  
+**面向材料腐蚀速率预测的可复现材料信息学基线**
 
----
+一个面向**材料腐蚀速率预测**的可复现材料信息学项目。项目源自北京科技大学《材料数据挖掘利用方法》课程设计，并进一步整理为包含数据、Notebook、命令行实验、结果图、项目 brief 和开源规范的研究型 baseline。
 
-## 📌 项目简介
+> **Research question**：给定合金元素成分与大气暴露环境特征，能否构建一个可复现、可解释的腐蚀速率预测流程？
 
-本仓库用于系统性整理与保存北京科技大学  
-**《材料数据挖掘利用方法》** 课程的全部学习与实践内容，包括：
+## 30-second Overview
 
-- 理论课程课件与学习资料  
-- 上机实验相关材料与实验报告  
-- 平时作业与练习代码  
-- 课程大作业（完整代码、报告与展示材料）
+| Item | Description |
+| --- | --- |
+| Task | Corrosion-rate prediction from material composition and exposure environment |
+| Dataset | `datasets/project_target_dataset.xlsx`, sheet `10year` |
+| Scale | 89 samples, 21 predictors, target `RATE` |
+| Methods | Mutual information, random forest feature importance, Random Forest, Ridge Regression, SHAP |
+| Reproduction | `python scripts/run_experiment.py` |
+| Default best model | Random Forest Regressor |
+| Default test result | RMSE `0.0220`, MAE `0.0134`, R2 `0.8218` |
 
-仓库内容覆盖了**材料数据分析与机器学习建模的完整流程**，重点关注：
+The default result is produced with `random_state=42` and a held-out 20% test split. Because the dataset is small, these numbers should be treated as a reproducible baseline, not as a universal corrosion-performance claim.
 
-> 数据预处理 → 特征选择 → 回归建模 → 模型评估 → 可解释性分析
+## Why This Project Is More Than a Course Archive
 
-当前仓库以**课程学习与实验复现**为主要目的，代码形式以 Notebook 与实验脚本为主，尚未进行工程化封装。
+- **Research workflow**: turns a course project into a clear experimental pipeline with data, assumptions, metrics and limitations.
+- **Reproducibility**: extracts the notebook workflow into a command-line experiment that regenerates metrics, predictions and figures.
+- **Leakage awareness**: performs train/test split before scaling; fits scalers and feature selection on the training set only.
+- **Model comparison**: evaluates a nonlinear ensemble baseline and a linear regularized baseline under the same protocol.
+- **Interpretability**: uses feature importance and SHAP-style explanations to inspect which variables drive predictions.
+- **Auditability**: keeps notebooks, reports, result snapshots and generated artifacts aligned with the code.
 
----
+## Quick Links for Reviewers
 
-## 🎯 学习与实践目标
+- [Project brief](docs/project-brief.md): concise research-facing summary.
+- [Reproducibility notes](docs/reproducibility.md): experiment assumptions and generated artifacts.
+- [Main experiment script](scripts/run_experiment.py): one-command reproduction entry point.
+- [Reusable experiment module](src/corrorate_ml/experiment.py): data loading, feature selection, modeling and evaluation.
+- [Core notebook](course_project/project.ipynb): original exploratory workflow.
+- [Result figures](result/): saved visual evidence from the course project and baseline analysis.
 
-通过本课程与仓库内容，系统掌握并实践以下能力：
+## Method Pipeline
 
-- 材料数据的清洗、预处理与特征工程方法  
-- 常见机器学习回归模型在材料问题中的应用  
-- 特征选择方法对模型性能与稳定性的影响  
-- 模型评估与泛化能力分析  
-- 基于可解释机器学习方法（如 SHAP）的机理理解  
+```text
+Excel dataset
+  -> numeric feature extraction
+  -> train/test split
+  -> train-only MinMax scaling
+  -> mutual information ranking
+  -> random forest importance ranking
+  -> top-k feature selection
+  -> Random Forest + Ridge Regression
+  -> RMSE / MAE / R2 evaluation
+  -> prediction plots + feature importance + optional SHAP
+```
 
----
+Default selected features from the command-line baseline:
 
-## 🧪 课程大作业概览
+```text
+TOW, T_MAX, WIND_AVE, Cl, ULTRA, SUN, SOLAR, PRECIPIT, WIND_MAX, T_MIN
+```
 
-课程大作业围绕**材料腐蚀速率预测问题**展开，主要内容包括：
+These variables cover exposure duration, temperature, wind, chloride, ultraviolet radiation, sunshine and precipitation, which are physically meaningful for atmospheric corrosion analysis.
 
-### 数据预处理
+## Baseline Results
 
-- 缺失值处理  
-- 特征标准化  
-- 训练集 / 测试集划分（避免数据泄漏）
+Default command:
 
-### 特征选择方法
+```bash
+python scripts/run_experiment.py
+```
 
-- 互信息（Mutual Information）  
-- 随机森林特征重要性  
-- 多种特征选择结果的对比与融合  
+Default metrics:
 
-### 回归模型
+| Model | Train RMSE | Train R2 | Test RMSE | Test MAE | Test R2 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Random Forest | 0.0200 | 0.8470 | 0.0220 | 0.0134 | 0.8218 |
+| Ridge Regression | 0.0201 | 0.8460 | 0.0224 | 0.0137 | 0.8163 |
 
-- 随机森林回归（Random Forest Regression）  
-- 岭回归（Ridge Regression）  
+The result suggests that, under the current split and feature-selection protocol, both models capture useful structure in the dataset, with Random Forest providing a slightly stronger held-out baseline.
 
-### 模型评估
+## Installation
 
-- MSE、R² 等定量指标  
-- 学习曲线与误差分析  
-- 真实值与预测值对比  
+```bash
+git clone https://github.com/yao-luan/CorroRate-ML.git
+cd CorroRate-ML
+python -m venv .venv
+```
 
-### 模型解释性分析
+Windows PowerShell:
 
-- 基于 SHAP 的特征贡献分析  
-- 关键材料 / 环境参数的影响解释  
+```powershell
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python scripts/run_experiment.py
+```
 
-> 📄 详细实验设计、参数设置与结果分析请参见 `course_project/` 目录下的课程报告 PDF。
+Linux / macOS:
 
----
+```bash
+source .venv/bin/activate
+pip install -r requirements.txt
+python scripts/run_experiment.py
+```
 
-## 📁 仓库结构说明
+Install as an editable local package:
+
+```bash
+pip install -e .
+corrorate-ml
+```
+
+Some coursework notebooks use TensorFlow/Keras. The main corrosion baseline does not require deep learning. To run those optional notebooks:
+
+```bash
+pip install -r requirements-deeplearning.txt
+```
+
+## Generated Artifacts
+
+Running the baseline writes reproducible artifacts to `outputs/corrosion_baseline/`:
+
+| File | Purpose |
+| --- | --- |
+| `metrics.csv` | model comparison with RMSE, MAE and R2 |
+| `selected_features.csv` | feature rankings and final selected features |
+| `predictions.csv` | held-out true values and model predictions |
+| `performance_scatter.png` | predicted vs observed corrosion rate |
+| `best_model_features.png` | feature importance or coefficients for the best model |
+| `shap_summary.png` / `shap_bar.png` | optional SHAP figures |
+| `run_config.json` | experiment configuration |
+
+`outputs/` is ignored by git because these files are generated from the tracked data and scripts.
+
+## Result Gallery
+
+Selected visual outputs from [`result/`](result/):
+
+<p align="center">
+  <img src="result/25模型性能结果汇总.png" width="48%" alt="Model performance summary">
+  <img src="result/11最佳模型随机森林模型特征重要性.png" width="48%" alt="Random forest feature importance">
+</p>
+
+<p align="center">
+  <img src="result/18SHAP特征重要性摘要图-随机森林.png" width="48%" alt="SHAP feature importance summary">
+  <img src="result/21特征相关性热力图.png" width="48%" alt="Feature correlation heatmap">
+</p>
+
+## Repository Structure
 
 ```text
 .
-├─ lecture_materials/
-├─ lab_materials/
-├─ assignments/
-├─ course_project/
-│  ├─ code/
-│  ├─ report/
-│  └─ slides/
-├─ datasets/
-├─ result/                 
-└─ README.md
+├─ src/corrorate_ml/               # Reproducible experiment package
+├─ scripts/run_experiment.py       # Command-line entry point
+├─ course_project/                 # Core notebook, report and slides
+├─ assignments/                    # Course assignments and practice notebooks
+├─ datasets/                       # Dataset files and descriptions
+├─ result/                         # Saved figures and result snapshots
+├─ docs/                           # Project brief and reproducibility notes
+├─ requirements.txt
+├─ requirements-deeplearning.txt
+├─ pyproject.toml
+├─ CITATION.cff
+├─ CONTRIBUTING.md
+└─ LICENSE
 ```
 
----
+## Project Positioning
 
-## 🛠️ 运行与复现说明
+This repository is best described as a **materials informatics research baseline** rather than a production software package. It is designed to show:
 
-本项目以 **Jupyter Notebook** 形式为主，适用于课程学习与实验复现。
+- how a materials dataset is converted into a modeling problem;
+- how feature-selection and model-evaluation decisions are made explicit;
+- how exploratory notebooks can be preserved while a reproducible script is extracted;
+- how model performance and interpretability can be reported with appropriate caution.
 
-### 运行环境建议
+## Limitations and Next Steps
 
-- Python ≥ 3.9  
-- 推荐使用 **Conda** 或 **venv** 创建独立环境  
+Current limitations:
 
-### 主要依赖库
+- The dataset is small, so conclusions are exploratory.
+- The default validation is a random hold-out split; environment-aware or time-aware validation would be stronger.
+- External validation is needed before making broader corrosion-model claims.
+- Uncertainty estimation is not yet included.
 
-项目主要依赖见 `requirements.txt`，包括：
-numpy、pandas、scikit-learn、matplotlib、seaborn、shap 等。
+Planned improvements:
 
-### 安装示例
+- [x] Organize coursework, datasets, notebooks and result figures.
+- [x] Add open-source license, citation metadata and contribution guide.
+- [x] Add reproducible command-line experiment pipeline.
+- [ ] Refactor more notebook logic into reusable modules.
+- [ ] Add automated smoke tests for data loading and model training.
+- [ ] Add repeated-split or leave-one-environment-out validation.
+- [ ] Add uncertainty-aware prediction or confidence intervals.
 
-```bash
-pip install -r requirements.txt
-```
+## Citation
 
-### Notebook 运行说明
+If this repository helps your study or research, please cite it using [`CITATION.cff`](CITATION.cff).
 
-- 使用 **Jupyter Notebook / Jupyter Lab** 打开 `.ipynb` 文件  
-- ~~如代码中存在本机绝对路径，请修改为相对路径~~  
-- 涉及随机过程（如数据划分、随机森林等）的实验，已尽量固定  
-  `random_state` 以保证结果可复现  
+## License
 
----
-
-## 🔁 可复现性与实验规范
-
-### 数据处理规范
-
-- 特征标准化仅在**训练集**上进行  
-- 测试集数据不参与任何形式的参数拟合  
-- 明确区分原始数据、派生数据与可视化数据  
-
-### 模型训练与评估规范
-
-- 模型训练与测试过程严格分离  
-- 使用统一评估指标（如 MSE、R²）进行对比  
-- 通过学习曲线与误差分析评估模型泛化能力  
-
-### 实验结果说明
-
-- 实验结论基于多组实验结果与整体趋势分析  
-- 避免仅依据单次实验结果得出结论  
-
-### Quickstart
-
-```bash
-git clone https://github.com/yao-luan/ustb-materials-data-mining.git
-cd ustb-materials-data-mining
-python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-jupyter notebook
-```
-
----
-
-## 📚 仓库性质说明
-
-- 本仓库主要用于**课程学习与学术交流**  
-- 不作为商业项目或成熟软件发布  
-- 若包含第三方课件、数据或文档，仅用于合理教学与学习目的  
-- - 欢迎学习与参考；如用于课程作业或其他用途，请在理解基础上完成并注明来源
-
----
-
-## 🚀 后续计划
-
-### 代码与结构
-
-- 清理并统一代码结构  ✅️
-- 去除硬编码路径，增强可移植性  ✅️
-- 将课程大作业流程模块化  
-
-### 可复现性与工程化
-
-- 提供统一、可复现的实验运行入口  
-- 引入环境依赖管理文件（requirements / pyproject）  ✅️
-- 增加基础自动化测试  
-
-### 开源化方向（长期）
-
-- 将部分课程实验升级为可复用模块  
-- 提供更清晰的数据接口与实验配置方式  
-- 逐步发展为轻量级材料数据挖掘实验框架  
-
----
-
-## ✨ 致谢
-
-感谢北京科技大学 颜鲁宁教授
-**《材料数据挖掘利用方法》** 课程提供的系统理论讲解与实践指导。
-
-本项目的完成得益于课程内容的设计与教学安排，  
-为材料数据分析与机器学习方法的学习提供了良好平台。
-
----
-
-## 📜 许可证
-
-本项目基于 **MIT 许可证** 开源。
-详细条款请查阅根目录下的 `LICENSE` 文件。
+Code and original documentation are released under the [MIT License](LICENSE). Third-party course materials or datasets should be used according to their original source and context.

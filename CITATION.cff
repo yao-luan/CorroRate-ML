@@ -1,12 +1,12 @@
 cff-version: 1.2.0
-title: "USTB Materials Data Mining"
+title: "CorroRate-ML"
 message: "If you use this repository for your research or study, please cite it as follows."
 type: software
 authors:
   - family-names: 姚
     given-names: 志扬
-repository-code: "https://github.com/yao-luan/ustb-materials-data-mining"
-url: "https://github.com/yao-luan/ustb-materials-data-mining"
-version: "1.0.0"
-date-released: 2025-01-12
+repository-code: "https://github.com/yao-luan/CorroRate-ML"
+url: "https://github.com/yao-luan/CorroRate-ML"
+version: "1.1.0"
+date-released: 2026-05-26
 license: MIT

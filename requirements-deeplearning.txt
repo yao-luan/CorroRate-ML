@@ -1,0 +1,4 @@
+# Optional dependencies for deep-learning course assignments.
+# The main corrosion-rate baseline does not require these packages.
+tensorflow>=2.10
+keras>=2.10
